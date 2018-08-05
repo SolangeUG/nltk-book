@@ -1,0 +1,6 @@
+# PyCharm IDE project files
+.idea/
+*.iml
+
+# Python bytecode
+*.pyc
