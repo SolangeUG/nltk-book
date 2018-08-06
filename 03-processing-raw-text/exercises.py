@@ -1,5 +1,6 @@
 import re
 import json
+import nltk
 from urllib import request
 from bs4 import BeautifulSoup
 from nltk import word_tokenize
@@ -62,6 +63,21 @@ def print_weather_forecast():
     print("Maximum temperature (°C):", "%.2f" % convert_to_celsius(max_temp))
 
 
+def unknown(url):
+    """
+    Return a list of unknown words that occur on a webpage.
+    Extract all substrings consisting of lowercase letters (using re.findall()) and remove any items from this set
+    that occur in the Words Corpus (nltk.corpus.words).
+    :param url: url of the webpage to analyze
+    :return: list of unkown words
+    """
+    page = request.urlopen(url).read().decode('UTF-8')
+    strings = re.findall(r'\b[a-z][a-z]+\b', page)
+    strings = set(strings)
+    unknown_words = [word for word in strings if word not in nltk.corpus.words.words('en')]
+    return sorted(unknown_words)
+
+
 def main():
     """
     Main program entry
@@ -72,6 +88,9 @@ def main():
 
     print()
     print_weather_forecast()
+
+    print()
+    print(unknown("http://news.bbc.co.uk"))
 
 
 if __name__ == '__main__':
