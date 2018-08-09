@@ -4,3 +4,7 @@
 
 # Python bytecode
 *.pyc
+
+# Dataset files
+*.gz
+*.json
