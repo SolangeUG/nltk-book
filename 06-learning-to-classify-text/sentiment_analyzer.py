@@ -1,6 +1,8 @@
+import os
+import gzip
 import json
 import numpy
-import urllib.request, os, gzip
+import urllib.request
 from nltk.sentiment.util import mark_negation
 from sklearn.metrics import mean_absolute_error
 from sklearn.linear_model import LinearRegression
