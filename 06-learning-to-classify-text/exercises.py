@@ -43,5 +43,6 @@ train_set, test_set = featuresets[100:], featuresets[:100]
 movie_classifier = nltk.NaiveBayesClassifier.train(train_set)
 # Compute our classifier's accuracy:
 accuracy = nltk.classify.accuracy(movie_classifier, test_set)
+print("\nMovie classifier accuracy:", accuracy)
 # Let's retrieve which features the classifier found to be most informative:
 movie_classifier.show_most_informative_features(5)
