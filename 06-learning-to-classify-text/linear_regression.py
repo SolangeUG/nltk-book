@@ -153,18 +153,18 @@ if __name__ == '__main__':
     # List of all stopwords, including negated words
     all_stopwords = english_stopwords.union(negated_stopwords)
 
-    # Sets of already known positive words negative words
+    # Sets of already known positive and negative words
     positive_words = set(opinion_lexicon.positive())
     negative_words = set(opinion_lexicon.negative())
-    # Set of all positive words includes negated negative words
+    # Set of all positive words including negated negative words
     all_positive_words = positive_words.union({tag + "_NEG" for tag in negative_words})
-    # Set of all positive words includes negated positive words
+    # Set of all positive words including negated positive words
     all_negative_words = negative_words.union({tag + "_NEG" for tag in positive_words})
 
     # Compute mean absolute error
     y_train = dataset_to_targets(baby_train)
-    x_train_neg = dataset_to_matrix_with_negation(baby_train)
-    linear_regression_neg = LinearRegression().fit(x_train_neg, y_train)
-    pred_train_neg = linear_regression_neg.predict(x_train_neg)
-    mae_train_neg = mean_absolute_error(pred_train_neg, y_train)
-    print("Now the mean absolute error on the training data is %f stars" % mae_train_neg)
+    x_train_with_negation = dataset_to_matrix_with_negation(baby_train)
+    linear_regression_with_negation = LinearRegression().fit(x_train_with_negation, y_train)
+    prediction_train_with_negation = linear_regression_with_negation.predict(x_train_with_negation)
+    mae_train_with_negation = mean_absolute_error(prediction_train_with_negation, y_train)
+    print("Now the mean absolute error on the training data is %f stars" % mae_train_with_negation)
