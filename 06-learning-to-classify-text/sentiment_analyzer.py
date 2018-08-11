@@ -72,6 +72,13 @@ def tokenize_with_negation(text):
     :param text: input text
     :return: lowercase word tokens, without punctuation or stopwords
     """
+    # List of stop words in English
+    english_stopwords = set(stopwords.words('english'))
+    # Set of stopwords marked as negated
+    negated_stopwords = set(word + "_NEG" for word in english_stopwords)
+    # List of all stopwords, including negated words
+    all_stopwords = english_stopwords.union(negated_stopwords)
+
     tokens = []
     for sentence in sent_tokenize(text):
         pretokens = word_tokenize(sentence.lower())
@@ -105,13 +112,6 @@ if __name__ == '__main__':
     # Download data and load into memory
     baby_dataset = load_data(dataset, datadir)
     baby_train, baby_valid, baby_test = partition_train_validation_test(baby_dataset)
-
-    # List of stop words in English
-    english_stopwords = set(stopwords.words('english'))
-    # Set of stopwords marked as negated
-    negated_stopwords = set(word + "_NEG" for word in english_stopwords)
-    # List of all stopwords, including negated words
-    all_stopwords = english_stopwords.union(negated_stopwords)
 
     # Sentiment analyzer
     baby_train_docs_subj = generate_labeled_documents(baby_train[:800], 'subj')
