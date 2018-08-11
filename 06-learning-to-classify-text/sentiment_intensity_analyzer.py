@@ -74,9 +74,16 @@ def tokenize_with_negation(text):
     :param text: input text
     :return: lowercase word tokens, without punctuation or stopwords
     """
+    # List of stop words in English
+    english_stopwords = set(stopwords.words('english'))
+    # Set of negated stopwords
+    negated_stopwords = set(word + "_NEG" for word in english_stopwords)
+    # List of all stopwords, including negated words
+    all_stopwords = english_stopwords.union(negated_stopwords)
+
     tokens = []
-    for sentence in sent_tokenize(text):
-        pretokens = word_tokenize(sentence.lower())
+    for sent in sent_tokenize(text):
+        pretokens = word_tokenize(sent.lower())
         # exclude punctuation
         pretokens = [token for token in pretokens if any(char.isalpha() for char in token)]
         # exclude negated stop words (tagged as negated)
@@ -91,6 +98,14 @@ def pos_neg_fraction_with_negation(text):
     :param text: input text
     :return: a fraction of positive and negative words in the text
     """
+    # Sets of already known positive and negative words
+    positive_words = set(opinion_lexicon.positive())
+    negative_words = set(opinion_lexicon.negative())
+    # Set of all positive words including negated negative words
+    all_positive_words = positive_words.union({tag + "_NEG" for tag in negative_words})
+    # Set of all positive words including negated positive words
+    all_negative_words = negative_words.union({tag + "_NEG" for tag in positive_words})
+
     tokens = tokenize_with_negation(text)
     # count how many positive and negative words occur in the text
     count_pos, count_neg = 0, 0
@@ -186,24 +201,10 @@ if __name__ == '__main__':
     # Download data and load into memory
     baby_dataset = load_data(datasetname, datadir)
     baby_train, baby_valid, baby_test = partition_train_validation_test(baby_dataset)
-    X_train_neg = dataset_to_matrix_with_negation(baby_train)
+
+    # TRAINING DATASETS
+    X_train = dataset_to_matrix_with_negation(baby_train)
     Y_train = dataset_to_targets(baby_train)
-    Y_valid = dataset_to_targets(baby_valid)
-
-    # List of stop words in English
-    english_stopwords = set(stopwords.words('english'))
-    # Set of negated stopwords
-    negated_stopwords = set(word + "_NEG" for word in english_stopwords)
-    # List of all stopwords, including negated words
-    all_stopwords = english_stopwords.union(negated_stopwords)
-
-    # Sets of already known positive and negative words
-    positive_words = set(opinion_lexicon.positive())
-    negative_words = set(opinion_lexicon.negative())
-    # Set of all positive words including negated negative words
-    all_positive_words = positive_words.union({tag + "_NEG" for tag in negative_words})
-    # Set of all positive words including negated positive words
-    all_negative_words = negative_words.union({tag + "_NEG" for tag in positive_words})
 
     # Use the NLTK built-in SentimentIntensityAnalyer
     analyzer = SentimentIntensityAnalyzer()
@@ -217,11 +218,11 @@ if __name__ == '__main__':
     # Additional features
     additional_train = get_additional_features(baby_train)
     # Let's see what these values look like
-    print(X_train_neg.shape, analyzer_train.shape, additional_train.shape)
+    print(X_train.shape, analyzer_train.shape, additional_train.shape)
 
     # LINEAR REGRESSION ON TRAINING DATASET
     # Stack training sets horizontally
-    X_train_augmented = numpy.concatenate((X_train_neg, analyzer_train, additional_train), axis=1)
+    X_train_augmented = numpy.concatenate((X_train, analyzer_train, additional_train), axis=1)
     # Use Linear Regression
     linear_regression_augmented = LinearRegression().fit(X_train_augmented, Y_train)
     # Compute prediction
@@ -240,6 +241,7 @@ if __name__ == '__main__':
 
     # VALIDATION DATASET
     X_valid_neg = dataset_to_matrix_with_negation(baby_valid)
+    Y_valid = dataset_to_targets(baby_valid)
     analyzer_valid = extract_analyzer_features(baby_valid)
     additional_valid = get_additional_features(baby_valid)
     X_valid_augmented = numpy.concatenate((X_valid_neg, analyzer_valid, additional_valid), axis=1)
