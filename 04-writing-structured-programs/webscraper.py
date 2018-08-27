@@ -19,9 +19,54 @@ def download_pictures(celebrity, directory_name, gallery_size):
     # from http://www.zimbio.com/photos/{celebrity}/browse?Page=1
     # to   http://www.zimbio.com/photos/{celebrity}/browse?Page=gallery_size
 
+    # count will keep track of total number of pictures in the entire gallery
+    count = 0
     if gallery_size > -1:
         for i in range(1, gallery_size):
-            pass
+            page_address = 'http://www.zimbio.com/photos/%s/browse?Page=%s' \
+                           % (celebrity.replace(' ', '+'), str(i))
+            with urllib.request.urlopen(page_address) as response:
+                html = response.read()
+
+            # parse each gallery page and retrieve picture URLs
+            page = BeautifulSoup(html, 'html.parser')
+            links = page.select('.thumbnail-item')
+
+            for link in links:
+                # increment count for each link to a picture in the gallery
+                count += 1
+
+                # The page element containing the picture URL of our interest is of the form:
+
+                # <a class="thumbnail-item"
+                #    href="/photos/{celebrity}/{celebrity}+gallery+name/pictureID"
+                #                  |---------------------------------------------|
+                #                                       suffix
+                #    title="title of the gallery name">
+                #    <img alt="picture descriptive text"
+                #         src="http://www3.pictures/zimbio.com/bg/{celebrity}+some+title/pictureIDs.jpg">
+                #              |---------------------------------|
+                #                           prefix
+                # </a>
+
+                # So, the URL to the large size version of the picture we're interested in is of the form:
+                # prefix + suffix + 'x.jpg' where prefix and suffix are as shown above.
+
+                href = link.get('href')
+                image = link.select('img')[0]
+                source = image.get('src')
+                try:
+                    prefix = source.split(celebrity.replace(' ', '+'))[0]
+                    suffix = href.split('/photos/')[1]
+                    image_url = prefix + suffix + 'x.jpg'
+
+                    imagefilename = '%s_%s.jpg' % (celebrity.replace(' ', '_'), str(count))
+                    imagefilepath = os.path.join(directory_name, imagefilename)
+                    if not os.path.exists(imagefilepath):
+                        urllib.request.urlretrieve(image_url, imagefilepath)
+                except Exception as e:
+                    print('Error type: %s' % str(e))
+                    print(traceback.format_exc())
 
 
 def get_gallery_size(celebrity):
