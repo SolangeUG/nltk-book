@@ -91,12 +91,12 @@ def get_gallery_size(celebrity):
             html = response.read()
 
         page = BeautifulSoup(html, 'html.parser')
-        gallery = page.select('.pagination')
+        gallery = page.select('.pagination')[0]
         links = gallery.select('a')
         last_gallery_link = links[len(links) - 1]
 
         # The last gallery address is of the form /photos/{celebrity}/browse?Page=size
-        last_gallery_address = last_gallery_link.select('href')
+        last_gallery_address = last_gallery_link.get('href')
         gallery_size = int(last_gallery_address.split('=')[1])
 
         return gallery_size
@@ -114,5 +114,16 @@ def main():
     download_pictures(celebrity, folder, size)
 
 
+def test_get_gallery_size():
+    """
+    Test the get_gallery_size webscraping method
+    :return: None
+    """
+    celebrity = 'Angela Bassett'
+    size = get_gallery_size(celebrity)
+    print('%s gallery on Zimbio contains %s pages' % (celebrity, str(size)))
+
+
 if __name__ == '__main__':
-    main()
+    # main()
+    test_get_gallery_size()
