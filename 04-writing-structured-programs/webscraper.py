@@ -119,11 +119,23 @@ def test_get_gallery_size():
     Test the get_gallery_size webscraping method
     :return: None
     """
-    celebrity = 'Angela Bassett'
+    celebrity = 'Rachel McAdams'
     size = get_gallery_size(celebrity)
     print('%s gallery on Zimbio contains %s pages' % (celebrity, str(size)))
 
 
+def test_download_pictures():
+    """
+    Test the download_pictures webscraping method
+    :return: None
+    """
+    folder = './data/'
+    celebrity = 'Rachel McAdams'
+    size = 2
+    download_pictures(celebrity, folder, size)
+
+
 if __name__ == '__main__':
     # main()
-    test_get_gallery_size()
+    # test_get_gallery_size()
+    test_download_pictures()
