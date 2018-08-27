@@ -5,6 +5,7 @@
 # Python bytecode
 *.pyc
 
-# Dataset files
+# Dataset files and folders
 *.gz
 *.json
+data/
