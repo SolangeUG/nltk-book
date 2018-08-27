@@ -22,7 +22,7 @@ def download_pictures(celebrity, directory_name, gallery_size):
     # count will keep track of total number of pictures in the entire gallery
     count = 0
     if gallery_size > -1:
-        for i in range(1, gallery_size):
+        for i in range(1, gallery_size + 1):
             page_address = 'http://www.zimbio.com/photos/%s/browse?Page=%s' \
                            % (celebrity.replace(' ', '+'), str(i))
             with urllib.request.urlopen(page_address) as response:
@@ -109,7 +109,7 @@ def get_gallery_size(celebrity):
 
 def main():
     folder = './data/'
-    celebrity = 'Jennifer Garner'
+    celebrity = 'Regina King'
     size = get_gallery_size(celebrity)
     download_pictures(celebrity, folder, size)
 
@@ -136,6 +136,6 @@ def test_download_pictures():
 
 
 if __name__ == '__main__':
-    # main()
+    main()
     # test_get_gallery_size()
-    test_download_pictures()
+    # test_download_pictures()
