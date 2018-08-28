@@ -109,9 +109,9 @@ def get_gallery_size(celebrity):
 
 def main():
     folder = './data/'
-    celebrity = 'Regina King'
-    size = get_gallery_size(celebrity)
-    download_pictures(celebrity, folder, size)
+    celebrity = input('Enter name of celebrity:')
+    size = get_gallery_size(celebrity.strip())
+    download_pictures(celebrity.strip(), folder, size)
 
 
 def test_get_gallery_size():
@@ -136,6 +136,6 @@ def test_download_pictures():
 
 
 if __name__ == '__main__':
-    main()
     # test_get_gallery_size()
     # test_download_pictures()
+    main()
